@@ -1,0 +1,40 @@
+import React , {useState} from 'react';
+import S3 from 'react-aws-s3';
+
+// Resolve erro do buffer
+window.Buffer = window.Buffer || require("buffer").Buffer;
+
+
+const Upload = () => {
+
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    // Configs
+    const config = {
+        bucketName: process.env.REACT_APP_BUCKET_NAME,
+        region: process.env.REACT_APP_REGION,
+        accessKeyId: process.env.REACT_APP_ACCESS,
+        secretAccessKey: process.env.REACT_APP_SECRET,
+    }
+
+    const handleFileInput = (e) => {
+        setSelectedFile(e.target.files[0]);
+    }
+
+    const uploadFile = async (file) => {
+        const ReactS3Client = new S3(config);
+        //Nome do arquivo
+        ReactS3Client
+        .uploadFile(file, file.name)
+        .then(data => console.log(data.location))
+        .catch(err => console.error(err))
+    }
+    return <div>
+        <div>Upload to S3</div>
+        <input type="file" onChange={handleFileInput}/>
+        <br></br>
+        <button onClick={() => uploadFile(selectedFile)}> Upload to S3</button>
+    </div>
+}
+
+export default Upload;
